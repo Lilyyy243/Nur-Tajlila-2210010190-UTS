@@ -11,6 +11,8 @@ import javax.swing.table.DefaultTableModel;
 import java.util.List;
 import java.util.Date;
 import javax.swing.JOptionPane;
+import util.JsonUtil;
+import java.io.IOException;
 
 /**
  *
@@ -363,6 +365,7 @@ public class AplikasiKeuanganPribadi extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
+        System.exit(0);
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseClicked
@@ -383,14 +386,57 @@ public class AplikasiKeuanganPribadi extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jTable1MouseClicked
 
-    private void btnSimpanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSimpanActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btnSimpanActionPerformed
+    private void btnSimpanActionPerformed(java.awt.event.ActionEvent evt) {
+    try {
+        List<Transaksi> allData = transaksiDAO.getAll();
+        JsonUtil.exportToJson(allData);
+        JOptionPane.showMessageDialog(this, 
+            "Data berhasil diekspor ke file JSON!\nLokasi: src/database/transaksi_data.json", 
+            "Ekspor Berhasil", 
+            JOptionPane.INFORMATION_MESSAGE);
+    } catch (IOException e) {
+        JOptionPane.showMessageDialog(this,
+            "Gagal mengekspor data: " + e.getMessage(),
+            "Error",
+            JOptionPane.ERROR_MESSAGE);
+    }
+}
 
-    private void btnMuatActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMuatActionPerformed
-        loadData();
-        JOptionPane.showMessageDialog(this, "Data berhasil dimuat ulang!", "Success", JOptionPane.INFORMATION_MESSAGE);
-    }//GEN-LAST:event_btnMuatActionPerformed
+    private void btnMuatActionPerformed(java.awt.event.ActionEvent evt) {
+    try {
+        int choice = JOptionPane.showConfirmDialog(this,
+            "Muat data dari file JSON?\nPeringatan: Data yang ada akan ditimpa!",
+            "Konfirmasi",
+            JOptionPane.YES_NO_OPTION,
+            JOptionPane.WARNING_MESSAGE);
+            
+        if (choice == JOptionPane.YES_OPTION) {
+            List<Transaksi> importedData = JsonUtil.importFromJson();
+            
+            // Clear existing data
+            // Note: You might want to add a clearAll() method to TransaksiDAO
+            for (Transaksi t : transaksiDAO.getAll()) {
+                transaksiDAO.delete(t.getId());
+            }
+            
+            // Insert imported data
+            for (Transaksi t : importedData) {
+                transaksiDAO.insert(t);
+            }
+            
+            loadData();
+            JOptionPane.showMessageDialog(this,
+                "Data berhasil dimuat dari file JSON!",
+                "Impor Berhasil",
+                JOptionPane.INFORMATION_MESSAGE);
+        }
+    } catch (IOException e) {
+        JOptionPane.showMessageDialog(this,
+            "Gagal memuat data: " + e.getMessage(),
+            "Error",
+            JOptionPane.ERROR_MESSAGE);
+    }
+}
 
     private void btnCariActionPerformed(java.awt.event.ActionEvent evt) {
     String keyword = jTextField3.getText().trim();

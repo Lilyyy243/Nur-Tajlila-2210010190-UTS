@@ -123,4 +123,14 @@ public class TransaksiDAOImpl implements TransaksiDAO {
         }
         return null;
     }
+
+    @Override
+    public void clearAll() {
+        String sql = "DELETE FROM transaksi";
+        try (Statement stmt = connection.createStatement()) {
+            stmt.executeUpdate(sql);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }

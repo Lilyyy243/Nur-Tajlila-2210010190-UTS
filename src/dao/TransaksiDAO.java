@@ -10,4 +10,5 @@ public interface TransaksiDAO {
     List<Transaksi> getAll();
     List<Transaksi> search(String keyword);
     Transaksi findById(int id);
+    void clearAll(); // Optional: Add this if you want a more efficient way to clear data
 }

@@ -1,0 +1,16 @@
+[
+  {
+    "id": 4,
+    "tanggal": "2024-11-07",
+    "jumlahUang": 120000.0,
+    "kategori": "Tabungan",
+    "deskripsi": "awdsddgdgd"
+  },
+  {
+    "id": 5,
+    "tanggal": "2024-11-02",
+    "jumlahUang": 2313.0,
+    "kategori": "Tabungan",
+    "deskripsi": "adasdaw"
+  }
+]
