@@ -7,38 +7,45 @@ import java.sql.ResultSet;
 import java.io.File;
 import javax.swing.JOptionPane;
 
+/**
+ * Kelas Koneksi menangani koneksi ke database SQLite dan inisialisasi tabel.
+ */
 public class Koneksi {
     private static Connection conn;
-    // Update database path to use src/database folder
+    // Lokasi file database di folder src/database
     private static String dbUrl = "jdbc:sqlite:src/database/db_keuangan.db";
     
+    /**
+     * Membuat koneksi ke database SQLite.
+     * Jika database belum ada, akan dibuat secara otomatis.
+     */
     public static Connection getConnection() {
         try {
-            // Load SQLite JDBC Driver
+            // Memuat driver SQLite JDBC
             Class.forName("org.sqlite.JDBC");
             
             if (conn == null || conn.isClosed()) {
-                // Create database directory if it doesn't exist
+                // Membuat direktori database jika belum ada
                 File dbDir = new File("src/database");
                 if (!dbDir.exists()) {
                     dbDir.mkdirs();
                 }
                 
-                // Connect or create database
+                // Membuat koneksi ke database
                 conn = DriverManager.getConnection(dbUrl);
-                System.out.println("Database connection established successfully");
+                System.out.println("Koneksi ke database berhasil dibuat");
                 
-                // Create table if not exists
+                // Membuat tabel jika belum ada
                 if (!isTableExists("transaksi")) {
                     createTable();
                 }
             }
         } catch (ClassNotFoundException e) {
-            System.err.println("SQLite JDBC Driver not found: " + e.getMessage());
-            JOptionPane.showMessageDialog(null, "Database driver not found!", "Error", JOptionPane.ERROR_MESSAGE);
+            System.err.println("Driver SQLite JDBC tidak ditemukan: " + e.getMessage());
+            JOptionPane.showMessageDialog(null, "Driver database tidak ditemukan!", "Error", JOptionPane.ERROR_MESSAGE);
         } catch (SQLException e) {
-            System.err.println("Database connection error: " + e.getMessage());
-            JOptionPane.showMessageDialog(null, "Database connection failed!", "Error", JOptionPane.ERROR_MESSAGE);
+            System.err.println("Kesalahan koneksi database: " + e.getMessage());
+            JOptionPane.showMessageDialog(null, "Koneksi database gagal!", "Error", JOptionPane.ERROR_MESSAGE);
         }
         return conn;
     }
@@ -48,6 +55,9 @@ public class Koneksi {
         return rs.next();
     }
     
+    /**
+     * Membuat tabel transaksi dengan struktur yang telah ditentukan.
+     */
     private static void createTable() {
         String sql = "CREATE TABLE IF NOT EXISTS transaksi ("
                 + "id INTEGER PRIMARY KEY AUTOINCREMENT,"
@@ -59,9 +69,9 @@ public class Koneksi {
                     
         try (Statement stmt = conn.createStatement()) {
             stmt.execute(sql);
-            System.out.println("Table 'transaksi' created successfully");
+            System.out.println("Tabel 'transaksi' berhasil dibuat");
         } catch (SQLException e) {
-            System.err.println("Create table error: " + e.getMessage());
+            System.err.println("Kesalahan membuat tabel: " + e.getMessage());
         }
     }
     

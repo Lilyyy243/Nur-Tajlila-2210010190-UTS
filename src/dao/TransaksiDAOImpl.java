@@ -5,13 +5,24 @@ import java.util.*;
 import model.Transaksi;
 import database.Koneksi;
 
+/**
+ * Implementasi dari interface TransaksiDAO untuk mengelola data transaksi
+ * dalam database SQLite.
+ */
 public class TransaksiDAOImpl implements TransaksiDAO {
     private Connection connection;
     
+    /**
+     * Konstruktor untuk membuat koneksi ke database
+     */
     public TransaksiDAOImpl() {
         connection = Koneksi.getConnection();
     }
     
+    /**
+     * Menyimpan data transaksi baru ke database
+     * @param transaksi objek transaksi yang akan disimpan
+     */
     @Override
     public void insert(Transaksi transaksi) {
         String sql = "INSERT INTO transaksi (tanggal, jumlah_uang, kategori, deskripsi) VALUES (?, ?, ?, ?)";
@@ -26,6 +37,10 @@ public class TransaksiDAOImpl implements TransaksiDAO {
         }
     }
     
+    /**
+     * Memperbarui data transaksi yang sudah ada
+     * @param transaksi objek transaksi dengan data terbaru
+     */
     @Override
     public void update(Transaksi transaksi) {
         String sql = "UPDATE transaksi SET tanggal=?, jumlah_uang=?, kategori=?, deskripsi=? WHERE id=?";
@@ -41,6 +56,10 @@ public class TransaksiDAOImpl implements TransaksiDAO {
         }
     }
     
+    /**
+     * Menghapus data transaksi berdasarkan ID
+     * @param id ID transaksi yang akan dihapus
+     */
     @Override
     public void delete(int id) {
         String sql = "DELETE FROM transaksi WHERE id=?";
@@ -52,6 +71,10 @@ public class TransaksiDAOImpl implements TransaksiDAO {
         }
     }
     
+    /**
+     * Mengambil semua data transaksi dari database
+     * @return List berisi semua transaksi
+     */
     @Override
     public List<Transaksi> getAll() {
         List<Transaksi> list = new ArrayList<>();
@@ -73,6 +96,11 @@ public class TransaksiDAOImpl implements TransaksiDAO {
         return list;
     }
     
+    /**
+     * Mencari data transaksi berdasarkan kata kunci
+     * @param keyword kata kunci pencarian (ID, kategori, atau deskripsi)
+     * @return List transaksi yang sesuai dengan kata kunci
+     */
     @Override
     public List<Transaksi> search(String keyword) {
         List<Transaksi> list = new ArrayList<>();
@@ -103,6 +131,11 @@ public class TransaksiDAOImpl implements TransaksiDAO {
         return list;
     }
 
+    /**
+     * Mencari satu transaksi berdasarkan ID
+     * @param id ID transaksi yang dicari
+     * @return objek Transaksi jika ditemukan, null jika tidak
+     */
     @Override
     public Transaksi findById(int id) {
         String sql = "SELECT * FROM transaksi WHERE id = ?";
@@ -124,6 +157,9 @@ public class TransaksiDAOImpl implements TransaksiDAO {
         return null;
     }
 
+    /**
+     * Menghapus semua data transaksi dari database
+     */
     @Override
     public void clearAll() {
         String sql = "DELETE FROM transaksi";

@@ -1,17 +1,26 @@
-
 package model;
 
 import java.util.Date;
 
+/**
+ * Model data untuk menyimpan informasi transaksi keuangan.
+ */
 public class Transaksi {
-    private int id;
-    private Date tanggal;
-    private double jumlahUang;
-    private String kategori;
-    private String deskripsi;
+    // Atribut-atribut transaksi
+    private int id;                // ID unik transaksi
+    private Date tanggal;         // Tanggal transaksi
+    private double jumlahUang;    // Jumlah uang dalam transaksi
+    private String kategori;      // Kategori: Pendapatan/Pengeluaran/Tabungan
+    private String deskripsi;     // Keterangan tambahan
     
+    /**
+     * Konstruktor default
+     */
     public Transaksi() {}
     
+    /**
+     * Konstruktor dengan parameter lengkap
+     */
     public Transaksi(Date tanggal, double jumlahUang, String kategori, String deskripsi) {
         this.tanggal = tanggal;
         this.jumlahUang = jumlahUang;
@@ -19,7 +28,7 @@ public class Transaksi {
         this.deskripsi = deskripsi;
     }
     
-    // Getters and Setters
+    // Getter dan Setter untuk setiap atribut
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
     public Date getTanggal() { return tanggal; }

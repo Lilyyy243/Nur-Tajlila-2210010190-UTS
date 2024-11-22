@@ -15,7 +15,7 @@ import util.JsonUtil;
 import java.io.IOException;
 
 /**
- *
+ * Form utama aplikasi keuangan pribadi
  * @author Lila
  */
 public class AplikasiKeuanganPribadi extends javax.swing.JFrame {
@@ -24,7 +24,7 @@ public class AplikasiKeuanganPribadi extends javax.swing.JFrame {
     private Transaksi selectedTransaksi;
 
     /**
-     * Creates new form AplikasiKeuanganPribadi
+     * Membuat form AplikasiKeuanganPribadi baru
      */
     public AplikasiKeuanganPribadi() {
         initComponents();
@@ -33,11 +33,17 @@ public class AplikasiKeuanganPribadi extends javax.swing.JFrame {
         loadData();
     }
 
+    /**
+     * Inisialisasi tabel dengan kolom-kolom yang diperlukan
+     */
     private void initTable() {
         tableModel = (DefaultTableModel) jTable1.getModel();
         tableModel.setColumnIdentifiers(new String[]{"ID", "Tanggal", "Jumlah", "Kategori", "Deskripsi"});
     }
 
+    /**
+     * Memuat ulang data dari database ke tabel
+     */
     private void loadData() {
         try {
             tableModel.setRowCount(0);
@@ -536,6 +542,9 @@ public class AplikasiKeuanganPribadi extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnTambahActionPerformed
 
+    /**
+     * Membersihkan isian form
+     */
     private void clearForm() {
         jDateChooser1.setDate(null);
         txtJumlah.setText("");
