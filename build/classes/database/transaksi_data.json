@@ -1,16 +1,23 @@
 [
   {
-    "id": 4,
+    "id": 8,
+    "tanggal": "2024-11-20",
+    "jumlahUang": 312.0,
+    "kategori": "Pendapatan",
+    "deskripsi": "awdawda"
+  },
+  {
+    "id": 9,
     "tanggal": "2024-11-07",
     "jumlahUang": 120000.0,
     "kategori": "Tabungan",
     "deskripsi": "awdsddgdgd"
   },
   {
-    "id": 5,
+    "id": 10,
     "tanggal": "2024-11-02",
-    "jumlahUang": 2313.0,
+    "jumlahUang": 234.0,
     "kategori": "Tabungan",
-    "deskripsi": "adasdaw"
+    "deskripsi": "acafsfafafa"
   }
 ]

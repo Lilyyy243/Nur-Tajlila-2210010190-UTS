@@ -6,21 +6,23 @@ import model.Transaksi;
 import database.Koneksi;
 
 /**
- * Implementasi dari interface TransaksiDAO untuk mengelola data transaksi
- * dalam database SQLite.
+ * Implementasi dari interface TransaksiDAO untuk mengelola data transaksi dalam
+ * database SQLite.
  */
 public class TransaksiDAOImpl implements TransaksiDAO {
-    private Connection connection;
-    
+
+    private final Connection connection;
+
     /**
      * Konstruktor untuk membuat koneksi ke database
      */
     public TransaksiDAOImpl() {
         connection = Koneksi.getConnection();
     }
-    
+
     /**
      * Menyimpan data transaksi baru ke database
+     *
      * @param transaksi objek transaksi yang akan disimpan
      */
     @Override
@@ -33,12 +35,13 @@ public class TransaksiDAOImpl implements TransaksiDAO {
             stmt.setString(4, transaksi.getDeskripsi());
             stmt.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Gagal menyimpan data: " + e.getMessage());
         }
     }
-    
+
     /**
      * Memperbarui data transaksi yang sudah ada
+     *
      * @param transaksi objek transaksi dengan data terbaru
      */
     @Override
@@ -55,9 +58,10 @@ public class TransaksiDAOImpl implements TransaksiDAO {
             e.printStackTrace();
         }
     }
-    
+
     /**
      * Menghapus data transaksi berdasarkan ID
+     *
      * @param id ID transaksi yang akan dihapus
      */
     @Override
@@ -70,17 +74,17 @@ public class TransaksiDAOImpl implements TransaksiDAO {
             e.printStackTrace();
         }
     }
-    
+
     /**
      * Mengambil semua data transaksi dari database
+     *
      * @return List berisi semua transaksi
      */
     @Override
     public List<Transaksi> getAll() {
         List<Transaksi> list = new ArrayList<>();
         String sql = "SELECT * FROM transaksi ORDER BY tanggal DESC";
-        try (Statement stmt = connection.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
+        try (Statement stmt = connection.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) {
                 Transaksi t = new Transaksi();
                 t.setId(rs.getInt("id"));
@@ -95,9 +99,10 @@ public class TransaksiDAOImpl implements TransaksiDAO {
         }
         return list;
     }
-    
+
     /**
      * Mencari data transaksi berdasarkan kata kunci
+     *
      * @param keyword kata kunci pencarian (ID, kategori, atau deskripsi)
      * @return List transaksi yang sesuai dengan kata kunci
      */
@@ -133,6 +138,7 @@ public class TransaksiDAOImpl implements TransaksiDAO {
 
     /**
      * Mencari satu transaksi berdasarkan ID
+     *
      * @param id ID transaksi yang dicari
      * @return objek Transaksi jika ditemukan, null jika tidak
      */

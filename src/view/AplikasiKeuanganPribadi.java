@@ -1,9 +1,9 @@
 package view;
+
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
-
 import model.Transaksi;
 import dao.TransaksiDAO;
 import dao.TransaksiDAOImpl;
@@ -16,11 +16,13 @@ import java.io.IOException;
 
 /**
  * Form utama aplikasi keuangan pribadi
+ *
  * @author Lila
  */
 public class AplikasiKeuanganPribadi extends javax.swing.JFrame {
-    private TransaksiDAO transaksiDAO;
-    private DefaultTableModel tableModel;
+
+    private final TransaksiDAO transaksiDAO;
+    private final DefaultTableModel tableModel;
     private Transaksi selectedTransaksi;
 
     /**
@@ -29,6 +31,7 @@ public class AplikasiKeuanganPribadi extends javax.swing.JFrame {
     public AplikasiKeuanganPribadi() {
         initComponents();
         transaksiDAO = new TransaksiDAOImpl();
+        tableModel = (DefaultTableModel) jTable1.getModel();
         initTable();
         loadData();
     }
@@ -37,7 +40,6 @@ public class AplikasiKeuanganPribadi extends javax.swing.JFrame {
      * Inisialisasi tabel dengan kolom-kolom yang diperlukan
      */
     private void initTable() {
-        tableModel = (DefaultTableModel) jTable1.getModel();
         tableModel.setColumnIdentifiers(new String[]{"ID", "Tanggal", "Jumlah", "Kategori", "Deskripsi"});
     }
 
@@ -48,7 +50,7 @@ public class AplikasiKeuanganPribadi extends javax.swing.JFrame {
         try {
             tableModel.setRowCount(0);
             List<Transaksi> list = transaksiDAO.getAll();
-            for(Transaksi t : list) {
+            for (Transaksi t : list) {
                 Object[] row = {
                     t.getId(),
                     t.getTanggal(),
@@ -376,14 +378,14 @@ public class AplikasiKeuanganPribadi extends javax.swing.JFrame {
 
     private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseClicked
         int row = jTable1.getSelectedRow();
-        if(row >= 0) {
+        if (row >= 0) {
             selectedTransaksi = new Transaksi();
             selectedTransaksi.setId(Integer.parseInt(tableModel.getValueAt(row, 0).toString()));
-            selectedTransaksi.setTanggal((Date)tableModel.getValueAt(row, 1));
+            selectedTransaksi.setTanggal((Date) tableModel.getValueAt(row, 1));
             selectedTransaksi.setJumlahUang(Double.parseDouble(tableModel.getValueAt(row, 2).toString()));
             selectedTransaksi.setKategori(tableModel.getValueAt(row, 3).toString());
             selectedTransaksi.setDeskripsi(tableModel.getValueAt(row, 4).toString());
-            
+
             // Set form fields
             jDateChooser1.setDate(selectedTransaksi.getTanggal());
             txtJumlah.setText(String.valueOf(selectedTransaksi.getJumlahUang()));
@@ -393,112 +395,112 @@ public class AplikasiKeuanganPribadi extends javax.swing.JFrame {
     }//GEN-LAST:event_jTable1MouseClicked
 
     private void btnSimpanActionPerformed(java.awt.event.ActionEvent evt) {
-    try {
-        List<Transaksi> allData = transaksiDAO.getAll();
-        JsonUtil.exportToJson(allData);
-        JOptionPane.showMessageDialog(this, 
-            "Data berhasil diekspor ke file JSON!\nLokasi: src/database/transaksi_data.json", 
-            "Ekspor Berhasil", 
-            JOptionPane.INFORMATION_MESSAGE);
-    } catch (IOException e) {
-        JOptionPane.showMessageDialog(this,
-            "Gagal mengekspor data: " + e.getMessage(),
-            "Error",
-            JOptionPane.ERROR_MESSAGE);
+        try {
+            List<Transaksi> allData = transaksiDAO.getAll();
+            JsonUtil.exportToJson(allData);
+            JOptionPane.showMessageDialog(this,
+                    "Data berhasil diekspor ke file JSON!\nLokasi: src/database/transaksi_data.json",
+                    "Ekspor Berhasil",
+                    JOptionPane.INFORMATION_MESSAGE);
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(this,
+                    "Gagal mengekspor data: " + e.getMessage(),
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+        }
     }
-}
 
     private void btnMuatActionPerformed(java.awt.event.ActionEvent evt) {
-    try {
-        int choice = JOptionPane.showConfirmDialog(this,
-            "Muat data dari file JSON?\nPeringatan: Data yang ada akan ditimpa!",
-            "Konfirmasi",
-            JOptionPane.YES_NO_OPTION,
-            JOptionPane.WARNING_MESSAGE);
-            
-        if (choice == JOptionPane.YES_OPTION) {
-            List<Transaksi> importedData = JsonUtil.importFromJson();
-            
-            // Clear existing data
-            // Note: You might want to add a clearAll() method to TransaksiDAO
-            for (Transaksi t : transaksiDAO.getAll()) {
-                transaksiDAO.delete(t.getId());
+        try {
+            int choice = JOptionPane.showConfirmDialog(this,
+                    "Muat data dari file JSON?\nPeringatan: Data yang ada akan ditimpa!",
+                    "Konfirmasi",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.WARNING_MESSAGE);
+
+            if (choice == JOptionPane.YES_OPTION) {
+                List<Transaksi> importedData = JsonUtil.importFromJson();
+
+                // Clear existing data
+                // Note: You might want to add a clearAll() method to TransaksiDAO
+                for (Transaksi t : transaksiDAO.getAll()) {
+                    transaksiDAO.delete(t.getId());
+                }
+
+                // Insert imported data
+                for (Transaksi t : importedData) {
+                    transaksiDAO.insert(t);
+                }
+
+                loadData();
+                JOptionPane.showMessageDialog(this,
+                        "Data berhasil dimuat dari file JSON!",
+                        "Impor Berhasil",
+                        JOptionPane.INFORMATION_MESSAGE);
             }
-            
-            // Insert imported data
-            for (Transaksi t : importedData) {
-                transaksiDAO.insert(t);
-            }
-            
-            loadData();
+        } catch (IOException e) {
             JOptionPane.showMessageDialog(this,
-                "Data berhasil dimuat dari file JSON!",
-                "Impor Berhasil",
-                JOptionPane.INFORMATION_MESSAGE);
+                    "Gagal memuat data: " + e.getMessage(),
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
         }
-    } catch (IOException e) {
-        JOptionPane.showMessageDialog(this,
-            "Gagal memuat data: " + e.getMessage(),
-            "Error",
-            JOptionPane.ERROR_MESSAGE);
     }
-}
 
     private void btnCariActionPerformed(java.awt.event.ActionEvent evt) {
-    String keyword = jTextField3.getText().trim();
-    
-    if (keyword.isEmpty()) {
-        JOptionPane.showMessageDialog(this, 
-            "Masukkan kata kunci pencarian!\n" +
-            "Tips pencarian:\n" +
-            "- Masukkan ID transaksi untuk pencarian spesifik\n" +
-            "- Masukkan kata kunci kategori atau deskripsi\n" +
-            "- Pencarian bersifat case-insensitive", 
-            "Informasi Pencarian", 
-            JOptionPane.INFORMATION_MESSAGE);
-        return;
-    }
+        String keyword = jTextField3.getText().trim();
 
-    try {
-        tableModel.setRowCount(0);
-        List<Transaksi> list = transaksiDAO.search(keyword);
-        
-        if (list.isEmpty()) {
-            JOptionPane.showMessageDialog(this, 
-                "Data tidak ditemukan!\n" +
-                "Pastikan kata kunci yang dimasukkan benar.\n" +
-                "Anda dapat mencari berdasarkan:\n" +
-                "- ID Transaksi\n" +
-                "- Kategori (Pendapatan/Pengeluaran/Tabungan)\n" +
-                "- Deskripsi", 
-                "Data Tidak Ditemukan", 
-                JOptionPane.WARNING_MESSAGE);
+        if (keyword.isEmpty()) {
+            JOptionPane.showMessageDialog(this,
+                    "Masukkan kata kunci pencarian!\n"
+                    + "Tips pencarian:\n"
+                    + "- Masukkan ID transaksi untuk pencarian spesifik\n"
+                    + "- Masukkan kata kunci kategori atau deskripsi\n"
+                    + "- Pencarian bersifat case-insensitive",
+                    "Informasi Pencarian",
+                    JOptionPane.INFORMATION_MESSAGE);
             return;
         }
 
-        for(Transaksi t : list) {
-            Object[] row = {
-                t.getId(),
-                t.getTanggal(),
-                t.getJumlahUang(),
-                t.getKategori(),
-                t.getDeskripsi()
-            };
-            tableModel.addRow(row);
+        try {
+            tableModel.setRowCount(0);
+            List<Transaksi> list = transaksiDAO.search(keyword);
+
+            if (list.isEmpty()) {
+                JOptionPane.showMessageDialog(this,
+                        "Data tidak ditemukan!\n"
+                        + "Pastikan kata kunci yang dimasukkan benar.\n"
+                        + "Anda dapat mencari berdasarkan:\n"
+                        + "- ID Transaksi\n"
+                        + "- Kategori (Pendapatan/Pengeluaran/Tabungan)\n"
+                        + "- Deskripsi",
+                        "Data Tidak Ditemukan",
+                        JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            for (Transaksi t : list) {
+                Object[] row = {
+                    t.getId(),
+                    t.getTanggal(),
+                    t.getJumlahUang(),
+                    t.getKategori(),
+                    t.getDeskripsi()
+                };
+                tableModel.addRow(row);
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this,
+                    "Terjadi kesalahan saat mencari data:\n" + e.getMessage(),
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
         }
-    } catch (Exception e) {
-        JOptionPane.showMessageDialog(this, 
-            "Terjadi kesalahan saat mencari data:\n" + e.getMessage(), 
-            "Error", 
-            JOptionPane.ERROR_MESSAGE);
     }
-}
     private void jTextField3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField3ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jTextField3ActionPerformed
 
     private void btnHapusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHapusActionPerformed
-        if(selectedTransaksi != null) {
+        if (selectedTransaksi != null) {
             transaksiDAO.delete(selectedTransaksi.getId());
             loadData();
             clearForm();
@@ -506,12 +508,12 @@ public class AplikasiKeuanganPribadi extends javax.swing.JFrame {
     }//GEN-LAST:event_btnHapusActionPerformed
 
     private void btnUbahActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUbahActionPerformed
-        if(selectedTransaksi != null) {
+        if (selectedTransaksi != null) {
             selectedTransaksi.setTanggal(jDateChooser1.getDate());
             selectedTransaksi.setJumlahUang(Double.parseDouble(txtJumlah.getText()));
             selectedTransaksi.setKategori(cbKategori.getSelectedItem().toString());
             selectedTransaksi.setDeskripsi(jTextArea1.getText());
-            
+
             transaksiDAO.update(selectedTransaksi);
             loadData();
             clearForm();
@@ -524,13 +526,13 @@ public class AplikasiKeuanganPribadi extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(this, "Tanggal dan Jumlah harus diisi!", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-            
+
             Transaksi t = new Transaksi();
             t.setTanggal(jDateChooser1.getDate());
             t.setJumlahUang(Double.parseDouble(txtJumlah.getText()));
             t.setKategori(cbKategori.getSelectedItem().toString());
             t.setDeskripsi(jTextArea1.getText());
-            
+
             transaksiDAO.insert(t);
             loadData();
             clearForm();
