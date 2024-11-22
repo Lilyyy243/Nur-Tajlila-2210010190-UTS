@@ -3,17 +3,55 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 
+import model.Transaksi;
+import dao.TransaksiDAO;
+import dao.TransaksiDAOImpl;
+import javax.swing.table.DefaultTableModel;
+import java.util.List;
+import java.util.Date;
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author Saputra
  */
 public class AplikasiKeuanganPribadi extends javax.swing.JFrame {
+    private TransaksiDAO transaksiDAO;
+    private DefaultTableModel tableModel;
+    private Transaksi selectedTransaksi;
 
     /**
      * Creates new form AplikasiKeuanganPribadi
      */
     public AplikasiKeuanganPribadi() {
         initComponents();
+        transaksiDAO = new TransaksiDAOImpl();
+        initTable();
+        loadData();
+    }
+
+    private void initTable() {
+        tableModel = (DefaultTableModel) jTable1.getModel();
+        tableModel.setColumnIdentifiers(new String[]{"ID", "Tanggal", "Jumlah", "Kategori", "Deskripsi"});
+    }
+
+    private void loadData() {
+        try {
+            tableModel.setRowCount(0);
+            List<Transaksi> list = transaksiDAO.getAll();
+            for(Transaksi t : list) {
+                Object[] row = {
+                    t.getId(),
+                    t.getTanggal(),
+                    t.getJumlahUang(),
+                    t.getKategori(),
+                    t.getDeskripsi()
+                };
+                tableModel.addRow(row);
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Gagal memuat data: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     /**
@@ -239,16 +277,20 @@ public class AplikasiKeuanganPribadi extends javax.swing.JFrame {
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null}
             },
             new String [] {
-                "Tanggal", "Jumlah", "Kategori", "Deskripsi"
+                "Id", "Tanggal", "Jumlah", "Kategori", "Deskripsi"
             }
         ));
+        jTable1.setFocusable(false);
         jTable1.setRowSelectionAllowed(false);
         jTable1.setShowGrid(true);
         jTable1.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -257,6 +299,14 @@ public class AplikasiKeuanganPribadi extends javax.swing.JFrame {
             }
         });
         jScrollPane1.setViewportView(jTable1);
+        if (jTable1.getColumnModel().getColumnCount() > 0) {
+            jTable1.getColumnModel().getColumn(0).setResizable(false);
+            jTable1.getColumnModel().getColumn(0).setPreferredWidth(12);
+            jTable1.getColumnModel().getColumn(1).setResizable(false);
+            jTable1.getColumnModel().getColumn(2).setResizable(false);
+            jTable1.getColumnModel().getColumn(3).setResizable(false);
+            jTable1.getColumnModel().getColumn(4).setResizable(false);
+        }
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
@@ -302,7 +352,7 @@ public class AplikasiKeuanganPribadi extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 348, Short.MAX_VALUE))
+                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 485, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -314,7 +364,21 @@ public class AplikasiKeuanganPribadi extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseClicked
-        // TODO add your handling code here:
+        int row = jTable1.getSelectedRow();
+        if(row >= 0) {
+            selectedTransaksi = new Transaksi();
+            selectedTransaksi.setId(Integer.parseInt(tableModel.getValueAt(row, 0).toString()));
+            selectedTransaksi.setTanggal((Date)tableModel.getValueAt(row, 1));
+            selectedTransaksi.setJumlahUang(Double.parseDouble(tableModel.getValueAt(row, 2).toString()));
+            selectedTransaksi.setKategori(tableModel.getValueAt(row, 3).toString());
+            selectedTransaksi.setDeskripsi(tableModel.getValueAt(row, 4).toString());
+            
+            // Set form fields
+            jDateChooser1.setDate(selectedTransaksi.getTanggal());
+            txtJumlah.setText(String.valueOf(selectedTransaksi.getJumlahUang()));
+            cbKategori.setSelectedItem(selectedTransaksi.getKategori());
+            jTextArea1.setText(selectedTransaksi.getDeskripsi());
+        }
     }//GEN-LAST:event_jTable1MouseClicked
 
     private void btnSimpanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSimpanActionPerformed
@@ -322,11 +386,24 @@ public class AplikasiKeuanganPribadi extends javax.swing.JFrame {
     }//GEN-LAST:event_btnSimpanActionPerformed
 
     private void btnMuatActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMuatActionPerformed
-        // TODO add your handling code here:
+        loadData();
+        JOptionPane.showMessageDialog(this, "Data berhasil dimuat ulang!", "Success", JOptionPane.INFORMATION_MESSAGE);
     }//GEN-LAST:event_btnMuatActionPerformed
 
     private void btnCariActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCariActionPerformed
-        // TODO add your handling code here:
+        String keyword = jTextField3.getText();
+        tableModel.setRowCount(0);
+        List<Transaksi> list = transaksiDAO.search(keyword);
+        for(Transaksi t : list) {
+            Object[] row = {
+                t.getId(),
+                t.getTanggal(),
+                t.getJumlahUang(),
+                t.getKategori(),
+                t.getDeskripsi()
+            };
+            tableModel.addRow(row);
+        }
     }//GEN-LAST:event_btnCariActionPerformed
 
     private void jTextField3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField3ActionPerformed
@@ -334,16 +411,57 @@ public class AplikasiKeuanganPribadi extends javax.swing.JFrame {
     }//GEN-LAST:event_jTextField3ActionPerformed
 
     private void btnHapusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHapusActionPerformed
-        // TODO add your handling code here:
+        if(selectedTransaksi != null) {
+            transaksiDAO.delete(selectedTransaksi.getId());
+            loadData();
+            clearForm();
+        }
     }//GEN-LAST:event_btnHapusActionPerformed
 
     private void btnUbahActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUbahActionPerformed
-        // TODO add your handling code here:
+        if(selectedTransaksi != null) {
+            selectedTransaksi.setTanggal(jDateChooser1.getDate());
+            selectedTransaksi.setJumlahUang(Double.parseDouble(txtJumlah.getText()));
+            selectedTransaksi.setKategori(cbKategori.getSelectedItem().toString());
+            selectedTransaksi.setDeskripsi(jTextArea1.getText());
+            
+            transaksiDAO.update(selectedTransaksi);
+            loadData();
+            clearForm();
+        }
     }//GEN-LAST:event_btnUbahActionPerformed
 
     private void btnTambahActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTambahActionPerformed
-        // TODO add your handling code here:
+        try {
+            if (jDateChooser1.getDate() == null || txtJumlah.getText().isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Tanggal dan Jumlah harus diisi!", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            
+            Transaksi t = new Transaksi();
+            t.setTanggal(jDateChooser1.getDate());
+            t.setJumlahUang(Double.parseDouble(txtJumlah.getText()));
+            t.setKategori(cbKategori.getSelectedItem().toString());
+            t.setDeskripsi(jTextArea1.getText());
+            
+            transaksiDAO.insert(t);
+            loadData();
+            clearForm();
+            JOptionPane.showMessageDialog(this, "Data berhasil ditambahkan!", "Success", JOptionPane.INFORMATION_MESSAGE);
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Format jumlah uang tidak valid!", "Error", JOptionPane.ERROR_MESSAGE);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Terjadi kesalahan: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_btnTambahActionPerformed
+
+    private void clearForm() {
+        jDateChooser1.setDate(null);
+        txtJumlah.setText("");
+        cbKategori.setSelectedIndex(0);
+        jTextArea1.setText("");
+        selectedTransaksi = null;
+    }
 
     /**
      * @param args the command line arguments
