@@ -1,4 +1,3 @@
-
 package dao;
 
 import model.Transaksi;
@@ -10,4 +9,5 @@ public interface TransaksiDAO {
     void delete(int id);
     List<Transaksi> getAll();
     List<Transaksi> search(String keyword);
+    Transaksi findById(int id);
 }

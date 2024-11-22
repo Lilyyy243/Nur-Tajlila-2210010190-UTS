@@ -9,7 +9,8 @@ import javax.swing.JOptionPane;
 
 public class Koneksi {
     private static Connection conn;
-    private static String dbUrl = "jdbc:sqlite:db_keuangan.db"; // Changed path to root folder
+    // Update database path to use src/database folder
+    private static String dbUrl = "jdbc:sqlite:src/database/db_keuangan.db";
     
     public static Connection getConnection() {
         try {
@@ -17,6 +18,12 @@ public class Koneksi {
             Class.forName("org.sqlite.JDBC");
             
             if (conn == null || conn.isClosed()) {
+                // Create database directory if it doesn't exist
+                File dbDir = new File("src/database");
+                if (!dbDir.exists()) {
+                    dbDir.mkdirs();
+                }
+                
                 // Connect or create database
                 conn = DriverManager.getConnection(dbUrl);
                 System.out.println("Database connection established successfully");

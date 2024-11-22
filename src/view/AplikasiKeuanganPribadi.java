@@ -1,3 +1,4 @@
+package view;
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
@@ -13,7 +14,7 @@ import javax.swing.JOptionPane;
 
 /**
  *
- * @author Saputra
+ * @author Lila
  */
 public class AplikasiKeuanganPribadi extends javax.swing.JFrame {
     private TransaksiDAO transaksiDAO;
@@ -241,6 +242,7 @@ public class AplikasiKeuanganPribadi extends javax.swing.JFrame {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 1;
+        gridBagConstraints.ipadx = 30;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
         gridBagConstraints.insets = new java.awt.Insets(10, 14, 0, 9);
         jPanel3.add(btnCari, gridBagConstraints);
@@ -343,7 +345,7 @@ public class AplikasiKeuanganPribadi extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 516, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, 499, Short.MAX_VALUE)
+                .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, 525, Short.MAX_VALUE)
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -390,10 +392,38 @@ public class AplikasiKeuanganPribadi extends javax.swing.JFrame {
         JOptionPane.showMessageDialog(this, "Data berhasil dimuat ulang!", "Success", JOptionPane.INFORMATION_MESSAGE);
     }//GEN-LAST:event_btnMuatActionPerformed
 
-    private void btnCariActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCariActionPerformed
-        String keyword = jTextField3.getText();
+    private void btnCariActionPerformed(java.awt.event.ActionEvent evt) {
+    String keyword = jTextField3.getText().trim();
+    
+    if (keyword.isEmpty()) {
+        JOptionPane.showMessageDialog(this, 
+            "Masukkan kata kunci pencarian!\n" +
+            "Tips pencarian:\n" +
+            "- Masukkan ID transaksi untuk pencarian spesifik\n" +
+            "- Masukkan kata kunci kategori atau deskripsi\n" +
+            "- Pencarian bersifat case-insensitive", 
+            "Informasi Pencarian", 
+            JOptionPane.INFORMATION_MESSAGE);
+        return;
+    }
+
+    try {
         tableModel.setRowCount(0);
         List<Transaksi> list = transaksiDAO.search(keyword);
+        
+        if (list.isEmpty()) {
+            JOptionPane.showMessageDialog(this, 
+                "Data tidak ditemukan!\n" +
+                "Pastikan kata kunci yang dimasukkan benar.\n" +
+                "Anda dapat mencari berdasarkan:\n" +
+                "- ID Transaksi\n" +
+                "- Kategori (Pendapatan/Pengeluaran/Tabungan)\n" +
+                "- Deskripsi", 
+                "Data Tidak Ditemukan", 
+                JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
         for(Transaksi t : list) {
             Object[] row = {
                 t.getId(),
@@ -404,8 +434,13 @@ public class AplikasiKeuanganPribadi extends javax.swing.JFrame {
             };
             tableModel.addRow(row);
         }
-    }//GEN-LAST:event_btnCariActionPerformed
-
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(this, 
+            "Terjadi kesalahan saat mencari data:\n" + e.getMessage(), 
+            "Error", 
+            JOptionPane.ERROR_MESSAGE);
+    }
+}
     private void jTextField3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField3ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jTextField3ActionPerformed
